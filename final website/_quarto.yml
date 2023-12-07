@@ -4,12 +4,14 @@ project:
   
 
 website:
-  title: "final website"
+  title: "PM566 final website"
   navbar:
     left:
       - href: index.qmd
         text: Home
+      - Data Tables.qmd
       - about.qmd
+      
 
 format:
   html:

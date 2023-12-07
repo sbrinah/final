@@ -1,0 +1,10 @@
+## **Data Tables**
+
+```{r, echo=FALSE}
+library(skimr)
+library(tidyverse)
+#remove duplicated rows
+heart_initial<- read_csv("/Users/sabrinayang/Downloads/heart_2020_cleaned.csv")
+#data inspection
+skim(heart_initial)
+```
