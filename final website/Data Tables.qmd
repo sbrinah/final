@@ -8,3 +8,80 @@ heart_initial<- read_csv("/Users/sabrinayang/Downloads/heart_2020_cleaned.csv")
 #data inspection
 skim(heart_initial)
 ```
+
+### Other possible factors that associate with heart disease
+
+#### [Figure: Diabetic Status vs Heart Disease]{.underline}
+
+```{r, echo=FALSE}
+#heart disease vs diabetic status
+#plot
+library(ggplot2)
+library(plotly)
+heart_initial<- read_csv("/Users/sabrinayang/Downloads/heart_2020_cleaned.csv")
+duplicates <- duplicated(heart_initial)
+duplicate_rows <- heart_initial[duplicates, ]
+heart <- subset(heart_initial, !duplicated(heart_initial))
+heart<-
+  heart %>%
+  rename(
+    heartdis = HeartDisease,
+    bmi = BMI,
+    smoking = Smoking,
+    alc = AlcoholDrinking,
+    stroke = Stroke,
+    phys_H = PhysicalHealth,
+    ment_H = MentalHealth,
+    diff_walk = DiffWalking,
+    sex = Sex,
+    age = AgeCategory,
+    race = Race,
+    diabetic = Diabetic,
+    phys_A = PhysicalActivity,
+    health = GenHealth,
+    sleep = SleepTime,
+    asthma = Asthma,
+    kidney = KidneyDisease,
+    skincancer = SkinCancer
+  )
+heart <- heart %>%
+  mutate(heartdis_bi = if_else(heartdis == "Yes", 1, 0))
+#Heart disease outcome by bmi groups in plot (data visualisation)
+heart <-
+  heart %>%
+  mutate(outcome_heart = factor(heartdis_bi))
+heart <- heart %>%
+  mutate(diabetic_status = if_else(diabetic == "Yes", 1, 0))
+seg <- ggplot (heart, aes(x=diabetic_status, fill=heartdis)) + 
+  geom_bar(position = "dodge") + 
+  labs(title="Bar Graph of Diabetic Status vs. Heart Disease")
+ggplotly(seg)
+
+```
+
+**Description:** The figure of diabetic status vs heart disease above depicts the distribution of individuals within the study, categorized by their diabetic status (divided into diabetic (1) and non-diaetic (0) groups) and whether or not they have heart disease.
+
+**Findings**: The bar graph gives the following counts: no heart disease and no diabetes: 242,815. no heart disease but have diabetes: 31,641. have heart disease but no diabetes: 18,313. have heart disease and diabetes: 8,948. The bar graph allows us to make some observations about the relationship between heart disease and diabetes. 1/ Coexistence of heart disease and diabetes: There is a group of individuals (8,948) who have both heart disease and diabetes. This suggests a comorbidity or a significant overlap between the two conditions in some individuals. 2/ Individuals with only diabetes: A substantial number of individuals (31,641) have diabetes but do not have heart disease. While this indicates that diabetes can occur independently of heart disease, it also suggests that individuals with diabetes may be at risk for developing heart disease. 3/ Individuals with only heart disease: Some individuals (18,313) have heart disease without diabetes. This highlights that heart disease can exist in the absence of diabetes and may have other risk factors or causes. 4/ Large group without either condition: The largest group (242,815) consists of individuals who have neither heart disease nor diabetes. This could be a reference group for individuals without these health conditions.
+
+#### [Figure: Sleep Hours vs Heart Disease]{.underline}
+
+```{r, echo=FALSE}
+#heart disease and sleep time relationship
+heart$sleep_group <- ifelse(heart$sleep < 7, "lack of sleep",
+                          ifelse(heart$sleep >= 7, "enough sleep", "no sleep"))
+
+model_sleep<- glm(outcome_heart ~ sleep_group, 
+         family = binomial,
+         data = heart)
+#stacked histogram for heart disease vs sleep hour
+sleep1 <- ggplot(heart, aes(x=sleep, color=outcome_heart, fill=outcome_heart)) +
+  scale_fill_manual(values = c("skyblue", "pink")) +
+  scale_colour_manual(values = c("black", "black")) +
+  geom_histogram()+
+  labs(title="Sleep Hours vs. Heart Disease")
+ggplotly(sleep1)
+```
+
+**Description:** The figure of sleep hours vs heart disease above depicts the distribution of individuals based on their sleep hours and the corresponding occurrences of heart disease.
+
+**Findings:** The stacked histogram provides a nuanced insight into the relationship between sleep duration and the prevalence of heart disease within the studied population. Specifically, it shows that a predominant proportion of individuals with heart disease exhibit a sleep duration of 7.93 hours, whereas those without heart disease predominantly have a sleep duration of 7.14 hours. Notably, individuals with the least amount of sleep hours are those without heart disease. Consequently, when considering the entire spectrum of sleep durations observed in the study, it does not distinctly reveal a positive correlation between insufficient sleep and the presence of heart disease. These findings suggest an interplay of factors influencing cardiovascular health, emphasizing the need for a comprehensive exploration of additional variables, potential confounders, and nuanced analytical approaches to further evaluate the relationship between sleep hours and heart disease.

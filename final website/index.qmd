@@ -4,27 +4,35 @@ title: "Investigating factors' association with heart disease"
 
 ## **Introduction**
 
-According to CDC, heart disease is the leading cause of death in the United States. 47% of the people in the United States have at least one of three key risk factors for heart disease: high blood pressure, high blood cholesterol, and smoking. Other key factors like diabetic status, BMI, not getting enough physical activity or drinking too much alcohol can also contribute to heart disease. The impact of these risk factors on heart disease is multifaceted.
+According to CDC, heart disease is the leading cause of death in the United States. 47% of the people in the United States have at least one of three key risk factors for heart disease: high blood pressure, high blood cholesterol, and smoking. Other key factors like BMI, not getting enough physical activity or drinking too much alcohol can also contribute to heart disease. The impact of these risk factors on heart disease is multifaceted.
 
 High blood pressure, a condition where the force of blood against the artery walls is consistently too high, strains the cardiovascular system, increasing the likelihood of heart disease. Elevated blood cholesterol levels, particularly high levels of low-density lipoprotein (LDL) cholesterol, can lead to the buildup of plaque in arteries, narrowing blood vessels and hindering proper blood flow, thereby raising the risk of heart disease.
 
-Smoking can damage blood vessels, decrease the oxygen supply to the heart, and accelerate the formation of arterial plaque. Individuals with diabetes face an increased risk of heart disease due to the impact of uncontrolled blood sugar levels on the blood vessels. High Body Mass Index (BMI), indicative of obesity, puts additional strain on the heart and is associated with an elevated risk of heart disease. Insufficient physical activity contributes to heart disease by reducing cardiovascular fitness, impairing blood vessel function, and promoting weight gain. Insufficient sleep might also contribute to heart disease through disruptions in circadian rhythms. Excessive alcohol consumption is linked to an increased risk of heart disease, as it can raise blood pressure, contribute to obesity, and negatively impact heart function.
+Smoking can damage blood vessels, decrease the oxygen supply to the heart, and accelerate the formation of arterial plaque. High Body Mass Index (BMI), indicative of obesity, puts additional strain on the heart and is associated with an elevated risk of heart disease. Insufficient physical activity contributes to heart disease by reducing cardiovascular fitness, impairing blood vessel function, and promoting weight gain. Excessive alcohol consumption is linked to an increased risk of heart disease, as it can raise blood pressure, contribute to obesity, and negatively impact heart function.
 
 Thus, addressing these modifiable risk factors through lifestyle modifications and medical interventions is crucial for preventing and managing heart disease.
 
 ### **Question of Interest**
 
-How BMI, sleep, physical health, diabetic status (yes or no), alcohol consumption (yes or no), smoking, physical activity associate with heart disease?
+How BMI, physical health, alcohol consumption (yes or no), smoking, physical activity associate with heart disease?
 
 ### **Methods**
 
-The dataset used in this study was acquired from Kaggle <https://www.kaggle.com/datasets/kamilpytlak/personal-key-indicators-of-heart-disease/data>. Analysis through assessing various plots, tables and graphs was performed to identify association between heart disease and risk factors, including the examination of the effect of high blood pressure, high blood cholesterol, smoking, diabetic status, BMI, sleep time, physical activity, and alcohol consumption. The data was cleaned by replacing extreme values to 'NA's, shortening variable names, and creating new factor variable for better analysis. Skim function from skimr package was used to explore data. Dim, head and tail, summary, and table functions were used to check detailed observations. BMI was stratified into four groups (underweight, healthy, overweight, and obese) for better understanding of relationship with heart disease. Sleep hours was stratified into two groups (lack of sleep and enough sleep).
+The dataset used in this study was acquired from Kaggle <https://www.kaggle.com/datasets/kamilpytlak/personal-key-indicators-of-heart-disease/data>. Analysis through assessing various plots, tables and graphs was performed to identify association between heart disease and risk factors, including the examination of the effect of high blood pressure, high blood cholesterol, smoking, BMI, physical activity, and alcohol consumption. The data was cleaned by replacing extreme values to 'NA's, shortening variable names, and creating new factor variable for better analysis. Skim function from skimr package was used to explore data. Dim, head and tail, summary, and table functions were used to check detailed observations. BMI was stratified into four groups (underweight, healthy, overweight, and obese) for better understanding of relationship with heart disease.
 
 ### **Data inspection and indicators**
 
 The data was from 2020 with 319795 data points and 18 variables. The heart disease health indicators based on the BRFSS 2015 Codebook <https://www.cdc.gov/brfss/annual_data/2015/pdf/codebook15_llcp.pdf>
 
-BMI: Body Mass Index Alcohol drinking: Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week) Smoking: Have you smoked at least 100 cigarettes in your entire life? Physical activity: Adults who reported doing physical activity/exercise during the past 30 days other than their regular jobs Diabetic status: Were you ever told you have diabetes? Physical health: Now thinking about your physical health, which includes physical illness and injury, for how many days during the past 30 days was your physical health not good?
+BMI: Body Mass Index
+
+Alcohol drinking: Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week)
+
+Smoking: Have you smoked at least 100 cigarettes in your entire life?
+
+Physical activity: Adults who reported doing physical activity/exercise during the past 30 days other than their regular jobs
+
+Physical health: Now thinking about your physical health, which includes physical illness and injury, for how many days during the past 30 days was your physical health not good?
 
 Data inspection includes: check dimensions using dim(heart), check the first few rows (headers) using head(heart), check the last few rows (footers) using tail(heart), and check variable names and types using str(heart). Rename variables to shorter length and all lower case.
 
@@ -33,8 +41,6 @@ BMI is right skewed and has a range from 12.02 to 94.85 with mean of 28.33.
 Physical Health right skewed and has a range from 0 to 30 with mean of 3.37.
 
 Mental Health right skewed and has a range from 0 to 30 with mean of 3.90.
-
-SleepTime left skewed and has a range from 1 to 24 with mean of 7.10.
 
 There is no missing value in the dataset.
 
@@ -99,35 +105,13 @@ ggplotly(plot_bmi)
 
 **Findings:** The data visualization reveals a predominant pattern wherein a significant proportion of individuals in the study exhibit are either obese or overweight. Within this demographic, it was observed that the majority of individuals diagnosed with heart disease are concentrated in the obese and overweight categories, signifying a potentially heightened risk of cardiovascular issues associated with higher body weight. Intriguingly, the underweight group comprises the fewest individuals with heart disease, suggesting a distinct association between body weight and the prevalence of heart-related conditions. This correlation underscores the relevance of weight management in cardiovascular health, emphasizing the need for targeted interventions and lifestyle modifications to address and mitigate the impact of excess weight on heart disease risk within the studied population.
 
-#### [Figure 2: Sleep Hours vs Heart Disease]{.underline} 
-
-```{r, echo=FALSE}
-#heart disease and sleep time relationship
-heart$sleep_group <- ifelse(heart$sleep < 7, "lack of sleep",
-                          ifelse(heart$sleep >= 7, "enough sleep", "no sleep"))
-
-model_sleep<- glm(outcome_heart ~ sleep_group, 
-         family = binomial,
-         data = heart)
-#stacked histogram for heart disease vs sleep hour
-sleep1 <- ggplot(heart, aes(x=sleep, color=outcome_heart, fill=outcome_heart)) +
-  scale_fill_manual(values = c("skyblue", "pink")) +
-  scale_colour_manual(values = c("black", "black")) +
-  geom_histogram()+
-  labs(title="Sleep Hours vs. Heart Disease")
-ggplotly(sleep1)
-```
-
-**Description:** The figure of sleep hours vs heart disease above depicts the distribution of individuals based on their sleep hours and the corresponding occurrences of heart disease.
-
-
-**Findings:** The stacked histogram provides a nuanced insight into the relationship between sleep duration and the prevalence of heart disease within the studied population. Specifically, it shows that a predominant proportion of individuals with heart disease exhibit a sleep duration of 7.93 hours, whereas those without heart disease predominantly have a sleep duration of 7.14 hours. Notably, individuals with the least amount of sleep hours are those without heart disease. Consequently, when considering the entire spectrum of sleep durations observed in the study, it does not distinctly reveal a positive correlation between insufficient sleep and the presence of heart disease. These findings suggest an interplay of factors influencing cardiovascular health, emphasizing the need for a comprehensive exploration of additional variables, potential confounders, and nuanced analytical approaches to further evaluate the relationship between sleep hours and heart disease.
-
-#### [Figure 3: Physical Health vs Heart Disease]{.underline} 
+#### [Figure 2: Physical Health vs Heart Disease]{.underline}
 
 ```{r, echo=FALSE}
 #heart disease vs physical health
-phyhealth <- ggplot (heart, aes(x=phys_H, fill=heartdis)) + 
+phyhealth <- ggplot (heart, aes(x=phys_H,color=outcome_heart, fill=heartdis)) + 
+  scale_fill_manual(values = c("skyblue", "pink")) +
+  scale_colour_manual(values = c("black", "black")) +
   geom_histogram() + 
   labs(title="Histogram of Physical Health vs. Heart Disease")
 ggplotly(phyhealth)
@@ -137,44 +121,7 @@ ggplotly(phyhealth)
 
 **Findings**: Based on the histogram visualization, the most abundant group is the people who consider themselves "good" for the past 30 days (0 for how many days during the past 30 days was your physical health not good?). Within that group (total of 208611 people), 194301 people have no heart disease (93.14% of the group) while 14310 have heart disease (6.86% of the group). Within a group of 7904 people who consider themselves as 15 days out of 30 days having "good" physical health, there were 6662 people without heart disease (84.3%) and 1242 people with heart disease (15.7%). Within a group of 19503 people who considered themselves 0 day out of 30 days having "good" physical health, there were 14884 people without heart disease (76.3%) and 4619 people with heart disease (23.7%). Remarkably, the data within each subgroup reveal a trend: as the number of days individuals perceive their physical health as "good" decreases, the proportion of individuals within that subgroup reporting the presence of heart disease increases.
 
-#### [Figure 4: Diabetic Status vs Heart Disease]{.underline} 
-
-```{r, echo=FALSE}
-#heart disease vs diabetic status
-#plot
-library(ggplot2)
-heart <- heart %>%
-  mutate(diabetic_status = if_else(diabetic == "Yes", 1, 0))
-seg <- ggplot (heart, aes(x=diabetic_status, fill=heartdis)) + 
-  geom_bar(position = "dodge") + 
-  labs(title="Bar Graph of Diabetic Status vs. Heart Disease")
-ggplotly(seg)
-```
-
-**Description:** The figure of diabetic status vs heart disease above depicts the distribution of individuals within the study, categorized by their diabetic status (divided into diabetic (1) and non-diaetic (0) groups) and whether or not they have heart disease.
-
-
-**Findings**:
-The bar graph gives the following counts:
-no heart disease and no diabetes: 242,815.
-no heart disease but have diabetes: 31,641.
-have heart disease but no diabetes: 18,313.
-have heart disease and diabetes: 8,948.
-The bar graph allows us to make some observations about the relationship between heart disease and diabetes.
-
-
-1/ Coexistence of heart disease and diabetes: There is a group of individuals (8,948) who have both heart disease and diabetes. This suggests a comorbidity or a significant overlap between the two conditions in some individuals.
-
-
-2/ Individuals with only diabetes: A substantial number of individuals (31,641) have diabetes but do not have heart disease. While this indicates that diabetes can occur independently of heart disease, it also suggests that individuals with diabetes may be at risk for developing heart disease.
-
-
-3/ Individuals with only heart disease: Some individuals (18,313) have heart disease without diabetes. This highlights that heart disease can exist in the absence of diabetes and may have other risk factors or causes.
-
-
-4/ Large group without either condition: The largest group (242,815) consists of individuals who have neither heart disease nor diabetes. This could be a reference group for individuals without these health conditions.
-
-#### [Figure 5: Alcohol Status vs Heart Disease]{.underline} 
+#### [Figure 3: Alcohol Status vs Heart Disease]{.underline}
 
 ```{r, echo=FALSE}
 #heart disease vs alcohol status
@@ -190,7 +137,7 @@ ggplotly(alchol)
 
 **Findings:** Among 280,136 individuals classified as non-heavy drinkers, the plot reveals that 26,120 individuals, constituting 9.32% of this group, report the presence of heart disease. On the other hand, among the 21,581 individuals classified as heavy drinkers, a lower proportion---1,141 individuals, or 5.29% of this particular group---acknowledge the occurrence of heart disease. These findings suggest a potential association between heavy alcohol consumption and a lower prevalence of heart disease within this specific population, underscoring the need for further investigation into the intricate relationships between drinking habits and cardiovascular health outcomes. For future analysis, it is crucial to consider additional factors such as type of alcohol consumed, individual variation in their susceptibility to the effects of alcohol to gain a comprehensive understanding of the impact of alcohol consumption on heart disease risk within distinct subgroups of the population.
 
-#### [Figure 6: Smoking Status vs Heart Disease]{.underline} 
+#### [Figure 4: Smoking Status vs Heart Disease]{.underline}
 
 ```{r, echo=FALSE}
 #heart disease vs smoking status 
@@ -204,10 +151,9 @@ ggplotly(smoke1)
 
 **Description:** The figure of smoking status vs heart disease above depicts the distribution of individuals within the study, categorized by their smoking status (divided into smoking (1) and non-smoking (0) groups) and whether or not they have heart disease.
 
-
 **Findings:** The stacked bar graph distinctly illustrates a clear comparison between the two groups based on their smoking status- among individuals with heart disease, the proportion of individuals who smoke is visibly larger when compared to the smoking population within the group without heart disease. This observation suggests a potential association between smoking and an increased likelihood of developing heart disease within the studied population.
 
-#### [Figure 7: Physical Activity vs Heart Disease]{.underline} 
+#### [Figure 5: Physical Activity vs Heart Disease]{.underline}
 
 ```{r, echo=FALSE}
 #heart disease vs physical activity 
@@ -225,8 +171,10 @@ ggplotly(newphys)
 
 ### Conclusion
 
-According to CDC and aside from the key risk factors like high blood pressure, high blood cholesterol, and smoking, several other medical conditions and lifestyle choices can put people at a higher risk for heart disease which include but not limited to diabetes, physical inactivity, and overweight and obesity. 
+According to CDC and aside from the key risk factors like high blood pressure, high blood cholesterol, and smoking, several other medical conditions and lifestyle choices can put people at a higher risk for heart disease which include but not limited to physical inactivity, and overweight and obesity.
 
-Building on this foundation, the exploratory data analysis conducted as part of the study further examined the relationship between specific variables and heart disease risk. The findings reveal that certain factors exhibit a positive association with heart disease. Specifically, diabetes, physical inactivity, a higher Body Mass Index (BMI), smoking, and the overall status of physical health demonstrate a positive relationship with the presence of heart disease in the studied population.
+Building on this foundation, the exploratory data analysis conducted as part of the study further examined the relationship between specific variables and heart disease risk. The findings reveal that certain factors exhibit a positive association with heart disease. Specifically, physical inactivity, a higher Body Mass Index (BMI), smoking, and the overall status of physical health demonstrate a positive relationship with the presence of heart disease in the studied population.
 
 This comprehensive assessment underscores the multifactorial nature of heart disease, highlighting that a spectrum of health conditions and lifestyle choices beyond the traditional risk factors plays a role in influencing cardiovascular outcomes. By identifying these associations, this analysis provides insights that can inform targeted interventions, preventive strategies, and public health initiatives. It also emphasizes the importance of considering a broad range of factors when assessing an individual's risk for heart disease and underscores the need for comprehensive and personalized approaches to cardiovascular health promotion and disease prevention.
+
+Assess to the full write-up here <https://github.com/sbrinah/final/blob/0c15aed6fa4f1c5df1cf94d03de42051b71cef27/final%20website/Final%20Project%20write-up.pdf>
